@@ -33,22 +33,12 @@ jobs:
     
     - name: Evaluate model
       run: |
+        echo "📊 Evaluating model..."
         if [ -f models/metrics.json ]; then
-          echo "📊 Model Metrics:"
           cat models/metrics.json
-          python3 -c "
-import json
-with open('models/metrics.json', 'r') as f:
-    metrics = json.load(f)
-print('\nModel Evaluation Results:')
-print(f\"Accuracy: {metrics['accuracy']:.4f}\")
-print(f\"Precision: {metrics['precision']:.4f}\")
-print(f\"Recall: {metrics['recall']:.4f}\")
-print(f\"F1 Score: {metrics['f1_score']:.4f}\")
-print('✅ Model passed evaluation!')
-"
-        else
           echo "✅ Model evaluation completed"
+        else
+          echo "⚠️ Metrics file not found"
         fi
     
     - name: Upload model to GitHub Artifacts
@@ -57,7 +47,6 @@ print('✅ Model passed evaluation!')
         name: trained-model
         path: |
           models/
-          mlruns/
         retention-days: 30
     
     - name: Summary
@@ -71,6 +60,3 @@ print('✅ Model passed evaluation!')
         echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
         echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "**Author:** Nessa Ayu Safitri" >> $GITHUB_STEP_SUMMARY
-
-
-
