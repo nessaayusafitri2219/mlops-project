@@ -23,33 +23,36 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install scikit-learn pandas numpy
     
     - name: Train model
       run: |
         python train.py
+        ls -la models/
         echo "✅ Model training completed"
     
     - name: Evaluate model
       run: |
         if [ -f models/metrics.json ]; then
-          python -c "
+          cat models/metrics.json
+          python3 << 'EOF'
 import json
 with open('models/metrics.json', 'r') as f:
     metrics = json.load(f)
-print('Model Evaluation Results:')
-print(f\"Accuracy: {metrics['accuracy']:.4f}\")
-print(f\"Precision: {metrics['precision']:.4f}\")
-print(f\"Recall: {metrics['recall']:.4f}\")
-print(f\"F1 Score: {metrics['f1_score']:.4f}\")
+print('\nModel Evaluation Results:')
+print(f"Accuracy: {metrics['accuracy']:.4f}")
+print(f"Precision: {metrics['precision']:.4f}")
+print(f"Recall: {metrics['recall']:.4f}")
+print(f"F1 Score: {metrics['f1_score']:.4f}")
 
 if metrics['accuracy'] < 0.8:
     print('Warning: Model accuracy below 80%')
+    exit(1)
 else:
     print('✅ Model passed evaluation!')
-"
+EOF
         else
-          echo "✅ Model evaluation completed"
+          echo "⚠️ Metrics file not found, but continuing..."
         fi
     
     - name: Upload model to GitHub Artifacts
@@ -73,45 +76,5 @@ else:
         echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "**Author:** Nessa Ayu Safitri" >> $GITHUB_STEP_SUMMARY
 
-  docker-build-push:
-    needs: train-evaluate-upload
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Download model artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: trained-model
-        path: .
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: nessaayusafitri
-        password: ${{ secrets.DOCKER_TOKEN }}
-    
-    - name: Build and Push Docker image
-      run: |
-        docker build -t nessaayusafitri/mlops-api:latest .
-        docker tag nessaayusafitri/mlops-api:latest nessaayusafitri/mlops-api:${{ github.sha }}
-        docker push nessaayusafitri/mlops-api:latest
-        docker push nessaayusafitri/mlops-api:${{ github.sha }}
-        echo "✅ Docker images pushed successfully"
-    
-    - name: Docker Summary
-      run: |
-        echo "### 🐳 Docker Build & Push Completed!" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "✅ **Docker Build**: Image built successfully" >> $GITHUB_STEP_SUMMARY
-        echo "✅ **Docker Push**: Image pushed to Docker Hub" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Image:** \`nessaayusafitri/mlops-api:latest\`" >> $GITHUB_STEP_SUMMARY
-        echo "**Tag:** \`nessaayusafitri/mlops-api:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+
 
