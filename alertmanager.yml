@@ -11,10 +11,10 @@ route:
 receivers:
   - name: 'email-notifications'
     email_configs:
-      - to: 'your-email@example.com'
-        from: 'alertmanager@example.com'
+      - to: 'nessaayusafitri2219@gmail.com'
+        from: 'alertmanager@mlops-project.com'
         smarthost: 'smtp.gmail.com:587'
-        auth_username: 'your-email@example.com'
+        auth_username: 'nessaayusafitri2219@gmail.com'
         auth_password: 'your-app-password'
         headers:
           Subject: 'MLOps Alert: {{ .GroupLabels.alertname }}'

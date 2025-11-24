@@ -207,7 +207,7 @@ MIT License - feel free to use this project for learning purposes.
 **Nessa Ayu Safitri**
 - Dicoding: Nessa ayu safitri
 - GitHub: [@nessaayusafitri2219](https://github.com/nessaayusafitri2219)
-- Email: nessaayusafitri@example.com
+- Email: nessaayusafitri2219@gmail.com
 
 ---
 
