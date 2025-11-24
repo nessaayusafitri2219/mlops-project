@@ -4,11 +4,11 @@ No MLflow, just basic sklearn
 """
 import json
 import os
+import pickle
 from sklearn.datasets import load_iris
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import joblib
 
 def main():
     # Load data
@@ -37,7 +37,8 @@ def main():
     
     # Save model
     os.makedirs("models", exist_ok=True)
-    joblib.dump(model, "models/model.pkl")
+    with open("models/model.pkl", "wb") as f:
+        pickle.dump(model, f)
     print("Model saved to models/model.pkl")
     
     # Save metrics
